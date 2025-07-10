@@ -1,9 +1,10 @@
 import time
 from typing import Union
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException, security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 app = FastAPI()
-
+security = HTTPBearer()
 
 @app.get("/")
 def read_root():
@@ -35,3 +36,10 @@ async def read_health():
 async def echo(request: Request):
     data = await request.json()
     return {"You sent": data}
+
+@app.get("/secure")
+def read_secure(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    if token != "token11122334455":
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"message": "You have an access"}
