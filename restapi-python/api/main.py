@@ -1,14 +1,9 @@
-from pyexpat.errors import messages
-
 from fastapi import FastAPI, Request, Depends, HTTPException, Form
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from datetime import datetime, timedelta
 from typing import Union
 import time
-import jwt
 from sqlalchemy.orm import Session
-
-from api import database, db_requests, auth
+import database, db_requests, auth
 
 app = FastAPI()
 security = HTTPBearer()
