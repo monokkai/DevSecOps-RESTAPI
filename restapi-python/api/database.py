@@ -1,8 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+import os
 
-MYSQL_DATABASE_URL = "mysql+pymysql://root:root@mysql:3306/users-db"
-
+# Get database URL from environment variable or use default
+MYSQL_DATABASE_URL = os.getenv(
+    "MYSQL_DATABASE_URL", 
+    "mysql+pymysql://root:root@mysql:3306/users-db"
+)
 
 # Used for works with DB connections and makes SQL-requests
 engine = create_engine(MYSQL_DATABASE_URL)
