@@ -81,6 +81,7 @@ def read_secure(credentials: HTTPAuthorizationCredentials = Depends(security)):
         # Not user? Go away
         if username is None:
             raise HTTPException(status_code=403, detail="Invalid token payload!")
+    # Now don't know what's the error with jwt.exceptions... due to that problem made static error text for error filters!
     except Exception as e:
         if "Signature has expired" in str(e):
             raise HTTPException(status_code=401, detail="Token expired")
