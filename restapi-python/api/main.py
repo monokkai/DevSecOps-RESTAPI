@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Union
 import time
-import jwt
+import jwt  # ← PyJWT
 
 app = FastAPI()
 security = HTTPBearer()
@@ -34,13 +34,13 @@ def create_bearer_token(data: dict, expires_delta: Union[timedelta, None] = None
         expire = datetime.now() + expires_delta
     else:
         expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"message": "Hello, World!"}
 
 
 @app.middleware("http")
@@ -75,7 +75,7 @@ def read_secure(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials  # giving token from Authorization: Bearer<token>
     try:
         # Decoding token with HS256
-        payload = jwt.encode(token, SECRET_KEY, algorithm=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         # Getting user from "sub" field of token
         username = payload.get("sub")
         # Not user? Go away
@@ -87,26 +87,31 @@ def read_secure(credentials: HTTPAuthorizationCredentials = Depends(security)):
             raise HTTPException(status_code=401, detail="Token expired")
         else:
             raise HTTPException(status_code=403, detail="Invalid token")
-    return {"message:" f"Hello, {username}! You have an access!"}
+
+    return {"message": f"Hello, {username}! You have an access!"}
 
 
-@app.post("/token")
-def get_token(
+@app.post("/register")
+def register(
         username: str = Form(..., description="User login"),
         password: str = Form(..., description="User password")
 ):
     user = fake_users_db.get(username)
     if not user:
         raise HTTPException(status_code=400, detail="User not found")
-
     if not verify_password(password, user["hashed_password"]):
         raise HTTPException(status_code=400, detail="Invalid password")
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_bearer_token(data={"data": username}, expires_delta=access_token_expires)
+    expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload = {
+        "sub": username,
+        "exp": expire
+    }
+
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     return {
         "username": username,
-        "access_token": access_token,
+        "access_token": token,
         "message": "User verified"
     }
