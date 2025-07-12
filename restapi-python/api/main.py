@@ -3,7 +3,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from typing import Union
 import time
 from sqlalchemy.orm import Session
-import database, db_requests, auth
+from api import database, db_requests, auth
+
+database.base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 security = HTTPBearer()
@@ -59,10 +61,11 @@ def register(
         db: Session = Depends(database.get_db)
 ):
     user = db_requests.get_user_by_username(db, username)
-    if not user:
-        raise HTTPException(status_code=400, detail="User not found")
-    if not auth.verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid password")
-
+    if user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    
+    hashed_password = auth.get_password_hash(password)
+    user = db_requests.create_user(db, username, hashed_password)
+    
     token = auth.create_bearer_token({"sub": username})
-    return {"username": username, "token": token, "message": "User verified!"}
+    return {"username": username, "token": token, "message": "User registered successfully!"}

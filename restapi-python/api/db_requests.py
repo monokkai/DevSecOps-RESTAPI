@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
-import models
+from api import models
+from typing import Optional
 
 
-def create_user(db: Session, username: str, full_name: str, hashed_password: str):
+def create_user(db: Session, username: str, hashed_password: str, full_name: Optional[str] = None):
     user = models.User(username=username, full_name=full_name, hashed_password=hashed_password)
     db.add(user)
     db.commit()

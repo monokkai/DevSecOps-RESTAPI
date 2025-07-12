@@ -1,13 +1,23 @@
-python3 -m venv venv
-source venv/bin/activate
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+PyJWT==2.8.0
+passlib[bcrypt]==1.7.4
+sqlalchemy==2.0.23
+pymysql==1.1.0
+cryptography==41.0.7
+python-multipart==0.0.6
+bcrypt==4.0.1
 
----
-fastapi
-uvicorn[standard]
-PyJWT
-passlib[bcrypt]
-sqlalchemy
-pymysql
----
+# python3 -m venv venv
+# source venv/bin/activate
 
-pip install -r requirements.txt
+# ---
+# fastapi
+# uvicorn[standard]
+# PyJWT
+# passlib[bcrypt]
+# sqlalchemy
+# pymysql
+# ---
+
+# pip install -r requirements.txt
