@@ -27,6 +27,9 @@ It includes:
 docker exec -it restapi-python-usersdb-1 mysql -u root -proot
     or
 mysql -u root -proot
+
+IF KUBERNETES IS OK, RUN IT:
+kubectl port-forward service/devsecops-api 8000:8000 &
 ```
 
 #1 To start docker and create user:
