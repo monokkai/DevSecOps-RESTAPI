@@ -29,6 +29,49 @@ docker exec -it restapi-python-usersdb-1 mysql -u root -proot
 mysql -u root -proot
 ```
 
+#1 To start docker and create user:
+```
+docker ps
+
+docker logs restapi-python-api-1
+
+docker logs restapi-python-usersdb-1
+
+docker compose down
+docker compose build
+docker compose up -d
+
+curl -X POST -F "username=testuser" -F "password=testpass" http://localhost:8000/register
+
+docker exec -it restapi-python-usersdb-1 mysql -u root -proot
+
+USE users-db;
+SELECT * FROM Users;
+```
+#2 To use Kubernetes(Container is already on DockerHub)
+```
+kubectl get pods
+
+kubectl get services
+
+kubectl get deployments
+
+kubectl logs devsecops-api-[POD_NAME]
+
+eval $(minikube docker-env)
+docker build -t devsecops-api .
+
+kubectl rollout restart deployment devsecops-api
+
+kubectl port-forward service/devsecops-api 8000:8000 &
+
+curl -X POST -F "username=testuser" -F "password=testpass" http://localhost:8000/register
+
+kubectl exec -it mysql-[POD_NAME] -- mysql -u root -proot -e "USE users-db; SELECT * FROM Users;"
+
+pkill -f "kubectl port-forward"
+```
+
 ---
 
 ## ⚙️ Features
