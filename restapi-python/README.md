@@ -22,6 +22,10 @@ It includes:
 └── README.md 
 ```
 
+```
+docker exec -it restapi-python-usersdb-1 mysql -u root -proot
+```
+
 ---
 
 ## ⚙️ Features
