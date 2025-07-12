@@ -1,3 +1,13 @@
 python3 -m venv venv
 source venv/bin/activate
+
+---
+fastapi
+uvicorn[standard]
+PyJWT
+passlib[bcrypt]
+sqlalchemy
+pymysql
+---
+
 pip install -r requirements.txt
