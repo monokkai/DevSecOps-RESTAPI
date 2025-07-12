@@ -1,9 +1,14 @@
+from pyexpat.errors import messages
+
 from fastapi import FastAPI, Request, Depends, HTTPException, Form
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from datetime import datetime, timedelta
 from typing import Union
 import time
 import jwt
+from sqlalchemy.orm import Session
+
+from api import database, db_requests, auth
 
 app = FastAPI()
 security = HTTPBearer()
@@ -24,17 +29,20 @@ async def log_requests(request: Request, call_next):
     print("------------------------------------")
     return response
 
+
 # TODO: make full access for admin to see all users
 @app.get("/users/{user_id}")
 def read_item(user_id: int, quantity: Union[str, None] = None):
     return {"user_id": user_id, "quantity": quantity}
 
 
+# TODO: make access ONLY for admin
 @app.get("/health")
 async def read_health():
     return {"healthy": True}
 
 
+# TODO: make access ONLY for admin
 @app.post("/echo")
 async def echo(request: Request):
     data = await request.json()
@@ -44,20 +52,7 @@ async def echo(request: Request):
 @app.get("/secure")
 def read_secure(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials  # giving token from Authorization: Bearer<token>
-    try:
-        # Decoding token with HS256
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        # Getting user from "sub" field of token
-        username = payload.get("sub")
-        # Not user? Go away
-        if username is None:
-            raise HTTPException(status_code=403, detail="Invalid token payload!")
-    # Now don't know what's the error with jwt.exceptions... due to that problem made static error text for error filters!
-    except Exception as e:
-        if "Signature has expired" in str(e):
-            raise HTTPException(status_code=401, detail="Token expired")
-        else:
-            raise HTTPException(status_code=403, detail="Invalid token")
+    username = auth.decode_bearer_token(token)
 
     return {"message": f"Hello, {username}! You have an access!"}
 
@@ -65,24 +60,14 @@ def read_secure(credentials: HTTPAuthorizationCredentials = Depends(security)):
 @app.post("/register")
 def register(
         username: str = Form(..., description="User login"),
-        password: str = Form(..., description="User password")
+        password: str = Form(..., description="User password"),
+        db: Session = Depends(database.get_db)
 ):
-    user = fake_users_db.get(username)
+    user = db_requests.get_user_by_username(db, username)
     if not user:
         raise HTTPException(status_code=400, detail="User not found")
-    if not verify_password(password, user["hashed_password"]):
+    if not auth.verify_password(password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid password")
 
-    expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {
-        "sub": username,
-        "exp": expire
-    }
-
-    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-
-    return {
-        "username": username,
-        "access_token": token,
-        "message": "User verified"
-    }
+    token = auth.create_bearer_token({"sub": username})
+    return {"username": username, "token": token, "message": "User verified!"}
