@@ -1,41 +1,12 @@
-from fastapi import FastAPI, Request, Depends, HTTPException, security, Form
+from fastapi import FastAPI, Request, Depends, HTTPException, Form
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Union
 import time
-import jwt  # ← PyJWT
+import jwt
 
 app = FastAPI()
 security = HTTPBearer()
-
-SECRET_KEY = "secret_for_jwt"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-fake_users_db = {
-    "egor": {
-        "username": "egor",
-        "full_name": "Egor Mayer",
-        "hashed_password": pwd_context.hash("password123"),
-        "disabled": False,
-    }
-}
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def create_bearer_token(data: dict, expires_delta: Union[timedelta, None] = None) -> str:
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now() + expires_delta
-    else:
-        expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 @app.get("/")
@@ -53,7 +24,7 @@ async def log_requests(request: Request, call_next):
     print("------------------------------------")
     return response
 
-
+# TODO: make full access for admin to see all users
 @app.get("/users/{user_id}")
 def read_item(user_id: int, quantity: Union[str, None] = None):
     return {"user_id": user_id, "quantity": quantity}
