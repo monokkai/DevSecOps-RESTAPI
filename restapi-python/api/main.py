@@ -1,8 +1,10 @@
-from typing import Union
 from fastapi import FastAPI, Request, Depends, HTTPException, security, Form
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
+from datetime import datetime, timedelta
+from typing import Union
 import time
+import jwt
 
 app = FastAPI()
 security = HTTPBearer()
@@ -21,8 +23,20 @@ fake_users_db = {
     }
 }
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+
+def create_bearer_token(data: dict, expires_delta: Union[timedelta, None] = None) -> str:
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now() + expires_delta
+    else:
+        expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 @app.get("/")
 def read_root():
@@ -58,10 +72,21 @@ async def echo(request: Request):
 
 @app.get("/secure")
 def read_secure(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    token = credentials.credentials
-    if token != SECRET_KEY:
-        raise HTTPException(status_code=403, detail="Forbidden")
-    return {"message": "You have an access"}
+    token = credentials.credentials  # giving token from Authorization: Bearer<token>
+    try:
+        # Decoding token with HS256
+        payload = jwt.encode(token, SECRET_KEY, algorithm=[ALGORITHM])
+        # Getting user from "sub" field of token
+        username = payload.get("sub")
+        # Not user? Go away
+        if username is None:
+            raise HTTPException(status_code=403, detail="Invalid token payload!")
+    except Exception as e:
+        if "Signature has expired" in str(e):
+            raise HTTPException(status_code=401, detail="Token expired")
+        else:
+            raise HTTPException(status_code=403, detail="Invalid token")
+    return {"message:" f"Hello, {username}! You have an access!"}
 
 
 @app.post("/token")
@@ -76,4 +101,11 @@ def get_token(
     if not verify_password(password, user["hashed_password"]):
         raise HTTPException(status_code=400, detail="Invalid password")
 
-    return {"message": "User verified"}
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_bearer_token(data={"data": username}, expires_delta=access_token_expires)
+
+    return {
+        "username": username,
+        "access_token": access_token,
+        "message": "User verified"
+    }
