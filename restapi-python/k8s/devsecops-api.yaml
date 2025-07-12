@@ -1,3 +1,19 @@
-containers:
-  - name: api
-    image: monokkay/devsecops-api:latest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devsecops-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devsecops-api
+  template:
+    metadata:
+      labels:
+        app: devsecops-api
+    spec:
+      containers:
+        - name: api
+          image: devsecops-api:latest
+          ports:
+            - containerPort: 8000
