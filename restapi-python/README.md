@@ -72,6 +72,17 @@ kubectl exec -it mysql-[POD_NAME] -- mysql -u root -proot -e "USE users-db; SELE
 pkill -f "kubectl port-forward"
 ```
 
+#3 Diagnostics and checks
+```
+docker network inspect restapi-python_default
+
+docker exec restapi-python-api-1 python -c "import socket; print(socket.gethostbyname('usersdb'))"
+
+kubectl exec devsecops-api-[POD_NAME] -- env | grep MYSQL
+
+kubectl describe pod devsecops-api-[POD_NAME]
+```
+
 ---
 
 ## ⚙️ Features
