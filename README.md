@@ -4,6 +4,7 @@
 
 This is a demo project to practice core DevSecOps skills.  
 It includes:
+
 - REST API (written in Go or Python FastAPI)
 - Docker containerization
 - CI/CD pipeline with GitHub Actions
@@ -22,17 +23,80 @@ It includes:
 └── README.md 
 ```
 
+```
+docker exec -it restapi-python-usersdb-1 mysql -u root -proot
+    or
+mysql -u root -proot
+
+IF KUBERNETES IS OK, RUN IT:
+kubectl port-forward service/devsecops-api 8000:8000 &
+```
+
+#1 To start docker and create user:
+```
+docker ps
+
+docker logs restapi-python-api-1
+
+docker logs restapi-python-usersdb-1
+
+docker compose down
+docker compose build
+docker compose up -d
+
+curl -X POST -F "username=testuser" -F "password=testpass" http://localhost:8000/register
+
+docker exec -it restapi-python-usersdb-1 mysql -u root -proot
+
+USE users-db;
+SELECT * FROM Users;
+```
+#2 To use Kubernetes(Container is already on DockerHub)
+```
+kubectl get pods
+
+kubectl get services
+
+kubectl get deployments
+
+kubectl logs devsecops-api-[POD_NAME]
+
+eval $(minikube docker-env)
+docker build -t devsecops-api .
+
+kubectl rollout restart deployment devsecops-api
+
+kubectl port-forward service/devsecops-api 8000:8000 &
+
+curl -X POST -F "username=testuser" -F "password=testpass" http://localhost:8000/register
+
+kubectl exec -it mysql-[POD_NAME] -- mysql -u root -proot -e "USE users-db; SELECT * FROM Users;"
+
+pkill -f "kubectl port-forward"
+```
+
+#3 Diagnostics and checks
+```
+docker network inspect restapi-python_default
+
+docker exec restapi-python-api-1 python -c "import socket; print(socket.gethostbyname('usersdb'))"
+
+kubectl exec devsecops-api-[POD_NAME] -- env | grep MYSQL
+
+kubectl describe pod devsecops-api-[POD_NAME]
+```
+
 ---
 
 ## ⚙️ Features
 
-| Component         | Description                                           |
-|-------------------|-------------------------------------------------------|
-| REST API          | Simple endpoints: `/health`, `/status`, `/echo`      |
-| Docker            | Image built from Dockerfile                          |
-| GitHub Actions    | Runs tests, linter, Trivy scan, and pushes image     |
-| Trivy             | Scans Docker image for known vulnerabilities (CVEs)  |
-| Helm              | Deploys API to local Kubernetes cluster (Minikube)   |
+| Component      | Description                                         |
+|----------------|-----------------------------------------------------|
+| REST API       | Simple endpoints: `/health`, `/status`, `/echo`     |
+| Docker         | Image built from Dockerfile                         |
+| GitHub Actions | Runs tests, linter, Trivy scan, and pushes image    |
+| Trivy          | Scans Docker image for known vulnerabilities (CVEs) |
+| Helm           | Deploys API to local Kubernetes cluster (Minikube)  |
 
 ---
 
