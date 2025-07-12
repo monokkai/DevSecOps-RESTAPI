@@ -4,6 +4,7 @@
 
 This is a demo project to practice core DevSecOps skills.  
 It includes:
+
 - REST API (written in Go or Python FastAPI)
 - Docker containerization
 - CI/CD pipeline with GitHub Actions
@@ -24,19 +25,21 @@ It includes:
 
 ```
 docker exec -it restapi-python-usersdb-1 mysql -u root -proot
+    or
+mysql -u root -proot
 ```
 
 ---
 
 ## ⚙️ Features
 
-| Component         | Description                                           |
-|-------------------|-------------------------------------------------------|
-| REST API          | Simple endpoints: `/health`, `/status`, `/echo`      |
-| Docker            | Image built from Dockerfile                          |
-| GitHub Actions    | Runs tests, linter, Trivy scan, and pushes image     |
-| Trivy             | Scans Docker image for known vulnerabilities (CVEs)  |
-| Helm              | Deploys API to local Kubernetes cluster (Minikube)   |
+| Component      | Description                                         |
+|----------------|-----------------------------------------------------|
+| REST API       | Simple endpoints: `/health`, `/status`, `/echo`     |
+| Docker         | Image built from Dockerfile                         |
+| GitHub Actions | Runs tests, linter, Trivy scan, and pushes image    |
+| Trivy          | Scans Docker image for known vulnerabilities (CVEs) |
+| Helm           | Deploys API to local Kubernetes cluster (Minikube)  |
 
 ---
 
