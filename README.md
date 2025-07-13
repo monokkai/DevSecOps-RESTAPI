@@ -86,6 +86,11 @@ kubectl exec devsecops-api-[POD_NAME] -- env | grep MYSQL
 kubectl describe pod devsecops-api-[POD_NAME]
 ```
 
+#4 Helm installation
+```
+helm install devsecops-api ./helm/devsecops
+```
+
 ---
 
 ## ⚙️ Features
