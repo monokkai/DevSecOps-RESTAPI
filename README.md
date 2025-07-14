@@ -30,6 +30,14 @@ mysql -u root -proot
 
 IF KUBERNETES IS OK, RUN IT:
 kubectl port-forward service/devsecops-api 8000:8000 &
+
+TO RUN DATABASE:
+kubectl exec -it mysql-5d98b7774b-m2tlv -- mysql -u root -psecretPassword
+
+TERRAFORM:
+terraform init
+terraform plan
+terraform apply
 ```
 
 #1 To start docker and create user:
@@ -89,6 +97,15 @@ kubectl describe pod devsecops-api-[POD_NAME]
 #4 Helm installation
 ```
 helm install devsecops-api ./helm/devsecops
+```
+
+#5 For example. Added new code in Go/Pyhon:
+```
+docker build -t {name}/devsecops-api:latest .
+
+docker push {name}/devsecops-api:latest
+
+terraform apply -auto-approve
 ```
 
 ---
