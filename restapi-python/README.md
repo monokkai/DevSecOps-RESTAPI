@@ -33,6 +33,11 @@ kubectl port-forward service/devsecops-api 8000:8000 &
 
 TO RUN DATABASE:
 kubectl exec -it mysql-5d98b7774b-m2tlv -- mysql -u root -psecretPassword
+
+TERRAFORM:
+terraform init
+terraform plan
+terraform apply
 ```
 
 #1 To start docker and create user:
