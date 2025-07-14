@@ -1,0 +1,20 @@
+replicaCount: 1
+
+image:
+  repository: monokkay/devsecops-api
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: NodePort
+  port: 8000
+#  nodePort: 30007
+
+env:
+  DB_HOST: mysql
+  DB_PORT: "3306"
+  DB_USER: root
+  DB_PASSWORD: secretPassword
+  DB_NAME: devsecops
+
+resources: {}
