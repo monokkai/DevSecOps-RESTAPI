@@ -108,6 +108,12 @@ docker push {name}/devsecops-api:latest
 terraform apply -auto-approve
 ```
 
+#6 Helmfile(Helm to start all services at 1 click):
+```
+helm plugin install https://github.com/databus23/helm-diff - if not installed
+helmfile apply
+```
+
 ---
 
 ## ⚙️ Features

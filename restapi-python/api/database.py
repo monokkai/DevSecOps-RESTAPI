@@ -5,8 +5,8 @@ import os
 # Get database connection parameters from environment variables
 DB_HOST = os.getenv("DB_HOST", "mysql")
 DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "root")
-DB_NAME = os.getenv("DB_NAME", "users_db")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "secretPassword")
+DB_NAME = os.getenv("DB_NAME", "users-db")
 
 # Construct database URL
 MYSQL_DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:3306/{DB_NAME}"

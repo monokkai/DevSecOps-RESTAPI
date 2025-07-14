@@ -20,7 +20,7 @@ spec:
               value: secretPassword
             - name: MYSQL_DATABASE
               value: users_db
+            - name: MYSQL_ROOT_HOST
+              value: "%"
           ports:
             - containerPort: 3306
-          args:
-            - --default-authentication-plugin=mysql_native_password

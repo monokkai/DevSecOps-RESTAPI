@@ -13,9 +13,8 @@ spec:
         app: devsecops-api
     spec:
       containers:
-        - name: api
-          image: devsecops-api:latest
-          imagePullPolicy: Never
+        - name: devsecops
+          image: monokkay/devsecops-api:latest
           ports:
             - containerPort: 8000
           env:
