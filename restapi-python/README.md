@@ -30,6 +30,9 @@ mysql -u root -proot
 
 IF KUBERNETES IS OK, RUN IT:
 kubectl port-forward service/devsecops-api 8000:8000 &
+
+TO RUN DATABASE:
+kubectl exec -it mysql-5d98b7774b-m2tlv -- mysql -u root -psecretPassword
 ```
 
 #1 To start docker and create user:

@@ -14,15 +14,16 @@ spec:
     spec:
       containers:
         - name: api
-          image: egormayer/devsecops-api
+          image: devsecops-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
           env:
             - name: DB_HOST
               value: mysql
             - name: DB_USER
               value: root
             - name: DB_PASSWORD
-              value: root
+              value: secretPassword
             - name: DB_NAME
-              value: users-db
-          ports:
-            - containerPort: 8000
+              value: users_db
