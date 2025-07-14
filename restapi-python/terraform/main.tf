@@ -21,7 +21,6 @@ provider "helm" {
   }
 }
 
-
 resource "helm_release" "devsecops_api" {
   name      = "devsecops-api"
   chart     = "${path.module}/../helm/devsecops"

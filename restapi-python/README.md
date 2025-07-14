@@ -99,6 +99,15 @@ kubectl describe pod devsecops-api-[POD_NAME]
 helm install devsecops-api ./helm/devsecops
 ```
 
+#5 For example. Added new code in Go/Pyhon:
+```
+docker build -t {name}/devsecops-api:latest .
+
+docker push {name}/devsecops-api:latest
+
+terraform apply -auto-approve
+```
+
 ---
 
 ## ⚙️ Features
