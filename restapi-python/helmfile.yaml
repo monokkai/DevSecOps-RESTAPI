@@ -1,0 +1,12 @@
+releases:
+  - name: devsecops-api
+    chart: ./helm/devsecops
+    namespace: default
+    values:
+      - values.yaml
+
+  - name: mysql
+    chart: ./helm/mysql
+    namespace: default
+    values:
+      - mysql-values.yaml
